@@ -59,17 +59,17 @@ class _ObjectsOnPlanesWidgetState extends State<ObjectsOnPlanesWidget> {
         ])));
   }
 
-  void onARViewCreated(
+  Future<void> onARViewCreated(
       ARSessionManager arSessionManager,
       ARObjectManager arObjectManager,
       ARAnchorManager arAnchorManager,
-      ARLocationManager arLocationManager) {
+      ARLocationManager arLocationManager) async {
     this.arSessionManager = arSessionManager;
     this.arObjectManager = arObjectManager;
     this.arAnchorManager = arAnchorManager;
 
     this.arSessionManager!.onInitialize(
-          showFeaturePoints: false,
+          showFeaturePoints: true,
           showPlanes: true,
           customPlaneTexturePath: "assets/triangle.png",
           showWorldOrigin: true,
@@ -78,6 +78,20 @@ class _ObjectsOnPlanesWidgetState extends State<ObjectsOnPlanesWidget> {
 
     this.arSessionManager!.onPlaneOrPointTap = onPlaneOrPointTapped;
     this.arObjectManager!.onNodeTap = onNodeTapped;
+
+
+    var newNode = ARNode(
+        type: NodeType.localGLTF2,
+        uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+        scale: Vector3(0.2, 0.2, 0.2),
+        // transformation: Matrix4(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,)
+        position: Vector3(0.5, 0.6, 0.4),
+        rotation: Vector4(1.0, 0.0, 0.0, 0.0)
+    );
+    bool? didAddWebNode = await this.arObjectManager!.addNode(newNode);
+    if (didAddWebNode!) {
+      this.nodes.add(newNode);
+    }
   }
 
   Future<void> onRemoveEverything() async {

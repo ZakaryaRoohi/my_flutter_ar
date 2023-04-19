@@ -38,6 +38,7 @@ dependencies:
   arcore_flutter_plugin: ^0.1.0
   wakelock: ^0.6.2
   ar_flutter_plugin: ^0.7.3
+  path_provider: ^2.0.14
 
 
 dev_dependencies:
@@ -79,6 +80,10 @@ flutter:
      - assets/myimages.imgdb
      - assets/topolino.jpg
      - assets/sintel.mp4
+     - assets/star-location-5665179-0.glb
+     - assets/scene.gltf
+     - assets/map_pin.glb
+     - assets/map_pin2.glb
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

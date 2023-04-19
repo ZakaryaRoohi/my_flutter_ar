@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ar_flutter_plugin/managers/ar_location_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
@@ -10,6 +12,8 @@ import 'package:ar_flutter_plugin/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin/datatypes/hittest_result_types.dart';
 import 'package:ar_flutter_plugin/models/ar_node.dart';
 import 'package:ar_flutter_plugin/models/ar_hittest_result.dart';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vector_math/vector_math_64.dart';
 import 'dart:math' as math;
 
@@ -38,6 +42,7 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
 
   @override
   Widget build(BuildContext context) {
+    createNewGlbFile();
     return Scaffold(
         appBar: AppBar(
           title: const Text('Screenshots'),
@@ -56,11 +61,11 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(onPressed: (){
-                  setState(() {
+
                     // Matrix4 mat4 = arSessionManager!.getCameraPose() as Matrix4;
                     // data = mat4.forward.toString();
-                    rt();
-                  });
+                    calDisFromCamera();
+
                 }, child: Text(data , style: TextStyle(color:Color.fromARGB(255, 58, 255, 123)),),),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -77,7 +82,7 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
           )
         ])));
   }
-  Future<void> rt() async {
+  Future<void> calDisFromCamera() async {
 
     final matrix4 = await  arSessionManager!.getCameraPose();
     if (matrix4 != null) {
@@ -92,7 +97,11 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
             math.pow(end.y - start.y, 2) +
             math.pow(end.z - start.z, 2),
       );
-      data = _distance.toString();
+      // data = _distance.toString();
+
+     setState(() {
+       data=  anchors[0].transformation.getTranslation().distanceTo(matrix4.getTranslation()).toString();
+     });
 
       // double? x = await arSessionManager!.getDistanceBetweenAnchors(anchors[1], anchors[2]);
     //   if(x != null){
@@ -152,6 +161,14 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
             ));
   }
 
+  Future<File> createNewGlbFile() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = documentsDirectory.path;
+    File file = File('$path/map_pin2.glb');
+    ByteData data = await rootBundle.load('assets/map_pin2.glb');
+    await file.writeAsBytes(data.buffer.asUint8List(), flush: true);
+    return file;
+  }
   Future<void> onNodeTapped(List<String> nodes) async {
     var number = nodes.length;
     arSessionManager!.onError("Tapped $number node(s)");
@@ -168,12 +185,18 @@ class _ScreenshotWidgetState extends State<ScreenshotWidget> {
       if (didAddAnchor != null && didAddAnchor) {
         anchors.add(newAnchor);
         // Add note to anchor
+        // var newNode = ARNode(
+        //     type: NodeType.webGLB,
+        //     uri:
+        //         "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+        //     scale: Vector3(0.2, 0.2, 0.2),
+        //     position: Vector3(0.0, 0.0, 0.0),
+        //     rotation: Vector4(1.0, 0.0, 0.0, 0.0));
         var newNode = ARNode(
-            type: NodeType.webGLB,
-            uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+            type: NodeType.fileSystemAppFolderGLB,
+            uri: "map_pin2.glb",
             scale: Vector3(0.2, 0.2, 0.2),
-            position: singleHitTestResult.worldTransform.getTranslation()+Vector3(0.0, 0.0, 0.0),
+            position: Vector3(0.0, 0.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0));
 
         bool? didAddNodeToAnchor =

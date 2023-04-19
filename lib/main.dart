@@ -7,6 +7,7 @@ import 'package:my_flutter_ar/screenshotexample.dart';
 import 'package:wakelock/wakelock.dart';
 
 import 'hello_ar.dart';
+import 'localandwebobjectsexample.dart';
 import 'objectsonplanesexample.dart';
 
 
@@ -81,13 +82,13 @@ class ExampleList extends StatelessWidget {
       //     'Visualize feature points, planes and world coordinate system',
       //         () => Navigator.push(context,
       //         MaterialPageRoute(builder: (context) => DebugOptionsWidget()))),
-      // Example(
-      //     'Local & Online Objects',
-      //     'Place 3D objects from Flutter assets and the web into the scene',
-      //         () => Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //             builder: (context) => LocalAndWebObjectsWidget()))),
+      Example(
+          'Local & Online Objects',
+          'Place 3D objects from Flutter assets and the web into the scene',
+              () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LocalAndWebObjectsWidget()))),
       Example(
           'Anchors & Objects on Planes',
           'Place 3D objects on detected planes using anchors',
